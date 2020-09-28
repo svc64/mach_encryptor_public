@@ -9,7 +9,7 @@
 #include <sys/stat.h>
 #include <mach-o/fat.h>
 #include <mach-o/loader.h>
-
+uint32_t key;
 int main(int argc, const char * argv[]) {
     if(argc<2) {
         printf("specify a mach-o path\n");
@@ -55,7 +55,7 @@ int main(int argc, const char * argv[]) {
                         printf("%s\n", sections[i].sectname);
                         if(strcmp(sections[i].sectname, "__text")==0) {
                             printf("found the __text section, starts at 0x%x, size 0x%llx\n", sections[i].offset, sections[i].size);
-                            uint32_t key = arc4random();
+                            key = arc4random();
                             printf("your key: 0x%x\n", key);
                             // XOR the text section
                             for(uint32_t x=sections[i].offset;x<sections[i].offset+sections[i].size;x+=sizeof(uint32_t)) {
@@ -76,6 +76,10 @@ int main(int argc, const char * argv[]) {
             currentOffset+=loadCommand->cmdsize;
         }
     end:
+        fclose(fp);
+        // write the key
+        fp = fopen("key", "wb");
+        fwrite(&key, 1,sizeof(key), fp);
         fclose(fp);
         fp = fopen(path, "wb");
         fwrite(macho, 1, statResult.st_size, fp);
