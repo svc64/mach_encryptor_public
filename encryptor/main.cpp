@@ -64,7 +64,7 @@ int main(int argc, const char * argv[]) {
                                 }
                                 uint32_t toEncrypt;
                                 memcpy(&toEncrypt, (void *)(x+(uint64_t)macho), sizeof(uint32_t));
-                                toEncrypt = toEncrypt^key;
+                                toEncrypt = toEncrypt-key;
                                 memcpy((void *)(x+(uint64_t)macho), &toEncrypt, sizeof(uint32_t));
                                 
                             }
